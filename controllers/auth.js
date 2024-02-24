@@ -36,7 +36,7 @@ const createUser = async (req, res) => {
                 id: user.id
             }
         }
-        const authtoken = jwt.sign(data, process.env.JWT_SECRET,{expiresIn:'1d'});
+        const authtoken = jwt.sign(data, process.env.JWT_SECRET, { expiresIn: '1d' });
         return res.json({ authtoken })
 
     }
@@ -96,4 +96,4 @@ const getUser = async (req, res) => {
     }
 }
 
-module.exports = {createUser, loginUser,getUser}
+module.exports = { createUser, loginUser, getUser }

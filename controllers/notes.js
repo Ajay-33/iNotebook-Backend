@@ -1,7 +1,7 @@
 const Notes = require('../models/Notes');
 const { body, validationResult } = require('express-validator');
 
-const fetchAllNotes=async (req, res) => {
+const fetchAllNotes = async (req, res) => {
     try {
         const notes = await Notes.find({ user: req.user.id });
         res.json(notes)
@@ -11,8 +11,8 @@ const fetchAllNotes=async (req, res) => {
     }
 }
 
-const addNote=async (req, res) => {
-    const validationRules =[
+const addNote = async (req, res) => {
+    const validationRules = [
         body('title', 'Enter a valid title').isLength({ min: 3 }),
         body('description', 'Description must be atleast 5 characters').isLength({ min: 5 })
     ];
@@ -37,10 +37,10 @@ const addNote=async (req, res) => {
     }
 }
 
-const updateNote=async (req, res) => {
+const updateNote = async (req, res) => {
     const { title, description, tag } = req.body;
     try {
-       
+
         // Find the note to be updated and update it
         let note = await Notes.findById(req.params.id);
         if (!note) { return res.status(404).send("Not Found") }
@@ -52,7 +52,7 @@ const updateNote=async (req, res) => {
         if (title) { newNote.title = title };
         if (description) { newNote.description = description };
         if (tag) { newNote.tag = tag };
-       
+
         note = await Notes.findByIdAndUpdate(req.params.id, { $set: newNote }, { new: true })
         res.json({ note });
     } catch (error) {
@@ -61,7 +61,7 @@ const updateNote=async (req, res) => {
     }
 }
 
-const deleteNote=async (req, res) => {
+const deleteNote = async (req, res) => {
     try {
         let note = await Notes.findById(req.params.id);
         if (!note) { return res.status(404).send("Not Found") }
@@ -76,4 +76,4 @@ const deleteNote=async (req, res) => {
     }
 }
 
-module.exports={fetchAllNotes,addNote,updateNote,deleteNote}
+module.exports = { fetchAllNotes, addNote, updateNote, deleteNote }
