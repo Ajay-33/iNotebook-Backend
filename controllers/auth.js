@@ -19,7 +19,8 @@ const createUser = async (req, res) => {
         // Check whether the user with this email exists already
         let user = await User.findOne({ email: req.body.email });
         if (user) {
-            return res.status(400).json({ error: "Sorry a user with this email already exists" })
+            const success=false
+            return res.status(400).json({ success,error: "Sorry a user with this email already exists" })
         }
 
         const salt = await bcrypt.genSalt(10);
@@ -37,7 +38,8 @@ const createUser = async (req, res) => {
             }
         }
         const authtoken = jwt.sign(data, process.env.JWT_SECRET, { expiresIn: '1d' });
-        return res.json({ authtoken })
+        const success=true
+        return res.json({ success,authtoken })
 
     }
     catch (error) {
@@ -56,19 +58,22 @@ const loginUser = async (req, res) => {
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+        const success=false
+        return res.status(400).json({success, errors: errors.array() });
     }
 
     const { email, password } = req.body;
     try {
         let user = await User.findOne({ email });
         if (!user) {
-            return res.status(400).json({ error: "Please try to login with correct credentials" });
+            const success=false
+            return res.status(400).json({success, error: "Please try to login with correct credentials" });
         }
 
         const passwordCompare = await bcrypt.compare(password, user.password);
         if (!passwordCompare) {
-            return res.status(400).json({ error: "Please try to login with correct credentials" });
+            const success=false
+            return res.status(400).json({success, error: "Please try to login with correct credentials" });
         }
 
         const data = {
@@ -77,11 +82,13 @@ const loginUser = async (req, res) => {
             }
         }
         const authtoken = jwt.sign(data, process.env.JWT_SECRET);
-        return res.json({ authtoken })
+        const success=true
+        return res.json({ success,authtoken })
 
     } catch (error) {
         console.error(error.message);
-        return res.status(500).send("Internal Server Error");
+        const success=false;
+        return res.status(500).json({success,error});
     }
 }
 
@@ -89,10 +96,11 @@ const getUser = async (req, res) => {
     try {
         const userId = req.user.id;
         const user = await User.findById(userId).select("-password")
-        res.send(user)
+        success=true
+        return res.json({success,user})
     } catch (error) {
-        console.error(error.message);
-        res.status(500).send("Internal Server Error");
+        const success=false;
+        return res.status(500).json({success,error});
     }
 }
 
